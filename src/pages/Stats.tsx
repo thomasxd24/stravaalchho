@@ -3,6 +3,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Award, Droplets, GlassWater, TrendingUp } from 'lucide-react'
 import { useStore } from '../state/store'
 import { computeBacCurve, peakBac, standardDrinks } from '../lib/bac'
+import { computeLeaderboard } from '../lib/leaderboard'
+import { COMMUNITY_EVENTS, COMMUNITY_SESSIONS, communityUser } from '../data/community'
 import { PageHeader } from '../components/PageHeader'
 
 function startOfWeek(d: Date): string {
@@ -58,6 +60,11 @@ export function Stats() {
     return list
   }, [totals, sessions.length])
 
+  const leaderboard = useMemo(
+    () => computeLeaderboard([...data.sessions, ...COMMUNITY_SESSIONS], [...data.events, ...COMMUNITY_EVENTS]),
+    [data.sessions, data.events],
+  )
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <PageHeader title="Statistiques" subtitle="Ta progression, en toute conscience" />
@@ -110,6 +117,42 @@ export function Stats() {
           Log ta première session pour voir tes stats apparaître ici.
         </p>
       )}
+
+      <div className="mt-6">
+        <p className="text-sm font-semibold text-stone-200">Classement responsable</p>
+        <p className="mt-1 text-xs text-stone-500">
+          Points pour l’hydratation, les retours sécurisés, la présence aux events et la variété — pas pour
+          la quantité bue.
+        </p>
+        <div className="mt-3 space-y-2">
+          {leaderboard.map((entry, i) => {
+            const isMe = entry.userId === 'me'
+            const user = isMe ? data.profile : communityUser(entry.userId)
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : null
+            return (
+              <div
+                key={entry.userId}
+                className={`flex items-center gap-3 rounded-xl border p-3 ${
+                  isMe ? 'border-amber-500/30 bg-amber-500/10' : 'border-white/10 bg-stone-900/60'
+                }`}
+              >
+                <span className="w-6 text-center text-sm text-stone-500">{medal ?? i + 1}</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-base">
+                  {user?.avatarEmoji ?? '🙂'}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-stone-100">{user?.name ?? 'Quelqu’un'}</p>
+                  <p className="text-[11px] text-stone-500">
+                    💧 {entry.waterCount} · 🚕 {entry.safeRideCount} · 📅 {entry.eventsAttended} · 🎲{' '}
+                    {entry.varietyCount}
+                  </p>
+                </div>
+                <p className="text-sm font-bold text-amber-400">{entry.score}</p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }

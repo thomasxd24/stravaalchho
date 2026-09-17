@@ -1,6 +1,11 @@
 import { PageHeader } from '../components/PageHeader'
+import { countryByCode } from '../data/countries'
+import { useStore } from '../state/store'
 
 export function Safety() {
+  const { data } = useStore()
+  const country = countryByCode(data.profile.country)
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <PageHeader title="Sécurité & repères" subtitle="Achcool est fait pour suivre, pas pour pousser à boire plus" />
@@ -17,9 +22,18 @@ export function Safety() {
 
         <Section title="Ne conduis jamais après avoir bu">
           <p>
-            En France, le taux légal est de 0,5 g/L de sang (0,2 g/L pour les permis probatoires), mais la seule
-            règle sûre est : si tu as bu, tu ne conduis pas. Prévois un taxi, un proche sobre, les transports, ou
-            dors sur place.
+            {country.legalBacLimitGL === 0 ? (
+              <>
+                En {country.name} ({country.flag}), la tolérance est de zéro : 0 g/L. La seule règle sûre reste la
+                même partout : si tu as bu, tu ne conduis pas.
+              </>
+            ) : (
+              <>
+                En {country.name} ({country.flag}), le taux légal de conduite est de {country.legalBacLimitGL} g/L
+                de sang. Mais la seule règle vraiment sûre est : si tu as bu, tu ne conduis pas.
+              </>
+            )}{' '}
+            Prévois un taxi, un proche sobre, les transports, ou dors sur place.
           </p>
         </Section>
 

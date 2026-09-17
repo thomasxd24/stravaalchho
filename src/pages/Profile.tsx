@@ -2,11 +2,22 @@ import { useState } from 'react'
 import { Camera, Music2 } from 'lucide-react'
 import { useStore } from '../state/store'
 import { PageHeader } from '../components/PageHeader'
+import { COUNTRIES, countryByCode } from '../data/countries'
+
+function ageFromBirthDate(birthDate: string): number {
+  const dob = new Date(birthDate)
+  const now = new Date()
+  let age = now.getFullYear() - dob.getFullYear()
+  const monthDiff = now.getMonth() - dob.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate())) age--
+  return age
+}
 
 export function Profile() {
   const { data, updateProfile } = useStore()
   const [name, setName] = useState(data.profile.name)
   const [bio, setBio] = useState(data.profile.bio)
+  const country = countryByCode(data.profile.country)
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
@@ -65,6 +76,33 @@ export function Profile() {
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-white/10 bg-stone-900/60 p-5">
+        <p className="text-sm font-semibold text-stone-200">Région</p>
+        <p className="mt-1 text-xs text-stone-500">
+          Utilisé pour afficher le taux légal de conduite et l’âge minimum corrects pour ton pays.
+        </p>
+        <select
+          value={data.profile.country}
+          onChange={(e) => {
+            const nextCountry = countryByCode(e.target.value)
+            const age = data.profile.birthDate ? ageFromBirthDate(data.profile.birthDate) : 0
+            const stillEligible = age >= nextCountry.legalDrinkingAge && !nextCountry.alcoholContentRestricted
+            updateProfile({ country: nextCountry.code, ageConfirmed: stillEligible })
+          }}
+          className="mt-3 w-full rounded-lg bg-white/5 px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-amber-500"
+        >
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.flag} {c.name}
+            </option>
+          ))}
+        </select>
+        <p className="mt-2 text-xs text-stone-500">
+          Âge légal en {country.name} : {country.legalDrinkingAge} ans · Taux légal de conduite :{' '}
+          {country.legalBacLimitGL === null ? 'non applicable' : `${country.legalBacLimitGL} g/L`}
+        </p>
       </div>
 
       <div className="mt-5 rounded-2xl border border-white/10 bg-stone-900/60 p-5">

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { StoreProvider } from './state/store'
 import { AppShell } from './components/AppShell'
+import { AgeGate } from './components/AgeGate'
 import { Landing } from './pages/Landing'
 import { Feed } from './pages/Feed'
 import { LogSession } from './pages/LogSession'
@@ -17,7 +18,13 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route element={<AppShell />}>
+          <Route
+            element={
+              <AgeGate>
+                <AppShell />
+              </AgeGate>
+            }
+          >
             <Route path="/app" element={<Feed />} />
             <Route path="/app/new" element={<LogSession />} />
             <Route path="/app/events" element={<Events />} />

@@ -47,6 +47,8 @@ export interface Session {
   kudos: string[]
   comments: Comment[]
   eventId?: string
+  /** Did you get home safely (taxi, transit, sober friend, stayed over) — never behind the wheel yourself? */
+  safeRideHome?: boolean
 }
 
 export type Sex = 'male' | 'female'
@@ -62,6 +64,9 @@ export interface UserProfile {
   connectedInstagram: boolean
   connectedTiktok: boolean
   bio: string
+  country: string
+  birthDate: string | null
+  ageConfirmed: boolean
 }
 
 export interface EventItem {

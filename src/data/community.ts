@@ -41,6 +41,7 @@ function buildSession(
   comments: Array<{ authorId: string; text: string }>,
   photoEmoji?: string,
   eventId?: string,
+  safeRideHome = true,
 ): Session {
   const startedAt = hoursAgoIso(startedHoursAgo)
   const endedAt = new Date(new Date(startedAt).getTime() + durationHours * 3600 * 1000).toISOString()
@@ -62,6 +63,7 @@ function buildSession(
       at: endedAt,
     })),
     eventId,
+    safeRideHome,
   }
 }
 
@@ -98,6 +100,8 @@ export const COMMUNITY_SESSIONS: Session[] = [
     ['u-lea', 'u-theo', 'u-sarah'],
     [{ authorId: 'u-theo', text: 'Revanche la semaine prochaine 😤' }],
     '🎲',
+    undefined,
+    false,
   ),
   buildSession(
     's-ines-1',

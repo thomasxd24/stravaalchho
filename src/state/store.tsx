@@ -14,6 +14,9 @@ const DEFAULT_PROFILE: UserProfile = {
   connectedInstagram: false,
   connectedTiktok: false,
   bio: 'Nouveau·elle sur Achcool 🍻',
+  country: 'OTHER',
+  birthDate: null,
+  ageConfirmed: false,
 }
 
 const DEFAULT_DATA: AppData = {
@@ -37,7 +40,11 @@ interface Store {
 const StoreContext = createContext<Store | null>(null)
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AppData>(() => loadData() ?? DEFAULT_DATA)
+  const [data, setData] = useState<AppData>(() => {
+    const loaded = loadData()
+    if (!loaded) return DEFAULT_DATA
+    return { ...DEFAULT_DATA, ...loaded, profile: { ...DEFAULT_PROFILE, ...loaded.profile } }
+  })
 
   useEffect(() => {
     saveData(data)

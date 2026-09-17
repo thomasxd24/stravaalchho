@@ -29,6 +29,7 @@ export function LogSession() {
   const [drafts, setDrafts] = useState<DraftDrink[]>([])
   const [durationHours, setDurationHours] = useState(2)
   const [notes, setNotes] = useState('')
+  const [safeRideHome, setSafeRideHome] = useState(false)
 
   const startedAt = useMemo(() => new Date(Date.now() - durationHours * 3600 * 1000).toISOString(), [durationHours])
   const endedAt = useMemo(() => new Date().toISOString(), [])
@@ -89,6 +90,7 @@ export function LogSession() {
       notes: notes.trim() || undefined,
       kudos: [],
       comments: [],
+      safeRideHome,
     }
     addSession(session)
     navigate(`/session/${session.id}`)
@@ -196,6 +198,18 @@ export function LogSession() {
         )}
 
         <SafetyNote />
+
+        <label className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3">
+          <input
+            type="checkbox"
+            checked={safeRideHome}
+            onChange={(e) => setSafeRideHome(e.target.checked)}
+            className="h-4 w-4 accent-amber-500"
+          />
+          <span className="text-sm text-stone-200">
+            Je suis rentré·e en sécurité (taxi, transports, proche sobre, ou j’ai dormi sur place)
+          </span>
+        </label>
 
         <div>
           <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-stone-500">Notes</label>
